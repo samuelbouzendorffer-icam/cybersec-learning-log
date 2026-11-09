@@ -1,0 +1,80 @@
+# Mémo réseau
+
+## Les modèles en couches
+
+| Couche OSI | Rôle | Exemples |
+|---|---|---|
+| 7 Application | services pour l'utilisateur | HTTP, DNS, SSH, SMTP |
+| 6 Présentation | format, chiffrement, compression | TLS (souvent classé ici ou en 5) |
+| 5 Session | ouverture et suivi des échanges | |
+| 4 Transport | transport de bout en bout, ports | TCP, UDP |
+| 3 Réseau | adressage et routage | IP, ICMP |
+| 2 Liaison de données | échanges sur un même réseau local | Ethernet, Wi-Fi, adresses MAC, ARP |
+| 1 Physique | signal sur le support | câble, ondes radio |
+
+Le modèle **TCP/IP** regroupe cela en 4 couches : Application, Transport, Internet, Accès réseau.
+
+## Ports courants
+
+| Port | Service | Remarque |
+|---|---|---|
+| 20 / 21 | FTP | non chiffré |
+| 22 | SSH | accès distant chiffré |
+| 23 | Telnet | non chiffré, à éviter |
+| 25 | SMTP | envoi de courriels entre serveurs |
+| 53 | DNS | noms de domaine (UDP surtout) |
+| 67 / 68 | DHCP | attribution automatique d'adresses (UDP) |
+| 80 | HTTP | non chiffré |
+| 110 | POP3 | |
+| 123 | NTP | synchronisation de l'heure (UDP) |
+| 143 | IMAP | |
+| 161 | SNMP | supervision (UDP) |
+| 389 | LDAP | annuaire |
+| 443 | HTTPS | HTTP chiffré par TLS |
+| 445 | SMB | partage de fichiers Windows |
+| 993 | IMAPS | IMAP chiffré |
+| 3306 | MySQL | base de données |
+| 3389 | RDP | bureau à distance Windows |
+| 5432 | PostgreSQL | base de données |
+
+## Protocoles à connaître
+
+- **ARP** : retrouve l'adresse MAC correspondant à une adresse IP sur le réseau local.
+- **DHCP** : donne automatiquement une adresse IP, une passerelle et un serveur DNS.
+- **DNS** : traduit un nom (`exemple.fr`) en adresse IP.
+- **ICMP** : messages de contrôle, utilisé par `ping`.
+- **TCP** : fiable, avec connexion. **UDP** : sans connexion, plus léger.
+- **Poignée de main TCP en 3 temps** : le client envoie `SYN`, le serveur répond `SYN-ACK`, le client confirme avec `ACK`.
+
+## Adresses spéciales
+
+- Privées (RFC 1918) : `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`. Non routées sur Internet.
+- Boucle locale : `127.0.0.0/8` (la machine elle-même).
+- Lien local : `169.254.0.0/16` (adresse attribuée quand aucun DHCP ne répond).
+
+## Aide-mémoire du découpage en sous-réseaux
+
+| Préfixe | Masque | Machines utilisables |
+|---|---|---|
+| /8 | 255.0.0.0 | 16 777 214 |
+| /16 | 255.255.0.0 | 65 534 |
+| /24 | 255.255.255.0 | 254 |
+| /25 | 255.255.255.128 | 126 |
+| /26 | 255.255.255.192 | 62 |
+| /27 | 255.255.255.224 | 30 |
+| /28 | 255.255.255.240 | 14 |
+| /29 | 255.255.255.248 | 6 |
+| /30 | 255.255.255.252 | 2 |
+
+Formule : un préfixe `/n` donne `2^(32-n) - 2` machines utilisables (on retire l'adresse du réseau et celle de broadcast). Pour vérifier mes calculs : [subnet-calculator](https://github.com/samuelbouzendorffer-icam/subnet-calculator).
+
+## Commandes de diagnostic
+
+| Besoin | Linux / macOS | Windows |
+|---|---|---|
+| mes adresses IP | `ip a` (Linux), `ifconfig` (macOS) | `ipconfig` |
+| tester la connexion | `ping hôte` | `ping hôte` |
+| chemin vers un hôte | `traceroute hôte` | `tracert hôte` |
+| interroger le DNS | `dig nom`, `nslookup nom` | `nslookup nom` |
+| ports en écoute | `ss -tulpn` (Linux) | `netstat -ano` |
+| table ARP | `arp -a` | `arp -a` |

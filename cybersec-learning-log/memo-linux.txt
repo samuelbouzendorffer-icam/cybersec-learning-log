@@ -1,0 +1,92 @@
+# Mémo Linux : ligne de commande
+
+Commandes de base pour travailler sur un système Linux (Debian/Ubuntu surtout). À essayer dans une machine virtuelle ou sur un système qui m'appartient.
+
+## Se repérer et chercher
+
+| Commande | Rôle |
+|---|---|
+| `pwd` | afficher le dossier courant |
+| `ls -la` | lister les fichiers, y compris cachés, avec les droits |
+| `cd dossier`, `cd ..`, `cd ~` | changer de dossier |
+| `find / -name "*.conf" 2>/dev/null` | chercher des fichiers par nom (en masquant les erreurs) |
+| `grep -rn "mot" dossier/` | chercher un texte dans tous les fichiers d'un dossier |
+
+## Lire et traiter du texte
+
+| Commande | Rôle |
+|---|---|
+| `cat`, `less` | afficher un fichier (`less` permet de défiler) |
+| `head -n 20`, `tail -n 20` | début et fin d'un fichier |
+| `tail -f fichier.log` | suivre un journal en direct |
+| `wc -l` | compter les lignes |
+| `sort`, `uniq -c` | trier, compter les doublons |
+
+## Redirections et tubes (pipes)
+
+- `>` écrit dans un fichier (en l'écrasant), `>>` ajoute à la fin, `2>` redirige les erreurs.
+- `|` envoie la sortie d'une commande vers la suivante.
+
+Exemple : compter les échecs de connexion SSH par adresse IP dans un journal.
+
+```bash
+awk '/Failed password/ {print $(NF-3)}' auth.log | sort | uniq -c | sort -nr
+```
+
+Dans une ligne `... Failed password for root from 203.0.113.45 port 40122 ssh2`, l'adresse IP est le quatrième champ avant la fin (`$(NF-3)`). C'est la version en ligne de commande de mon projet [ssh-log-analyzer](https://github.com/samuelbouzendorffer-icam/ssh-log-analyzer).
+
+## Permissions
+
+`ls -l` affiche par exemple `-rwxr-x---` : le type, puis les droits du propriétaire, du groupe et des autres.
+
+- Valeurs : lecture `r` = 4, écriture `w` = 2, exécution `x` = 1. On les additionne pour chaque catégorie.
+- `chmod 640 fichier` : propriétaire lecture + écriture, groupe lecture, autres rien.
+- `chmod u+x script.sh` : rendre un script exécutable pour son propriétaire.
+- `chown utilisateur:groupe fichier` : changer le propriétaire.
+
+| Mode | Usage typique |
+|---|---|
+| `600` | fichier privé (ex. clé SSH privée) |
+| `644` | fichier lisible par tous, modifiable par son propriétaire |
+| `755` | programme ou dossier accessible à tous |
+| `700` | dossier privé |
+
+À éviter : `chmod 777`, qui donne tous les droits à tout le monde.
+
+## Utilisateurs
+
+- `whoami`, `id` : qui suis-je et dans quels groupes.
+- `sudo commande` : exécuter une commande avec les droits administrateur.
+- `/etc/passwd` : liste des comptes, lisible par tous.
+- `/etc/shadow` : empreintes des mots de passe, lisible seulement par `root`.
+
+## Processus et réseau
+
+- `ps aux` : processus en cours. `top` ou `htop` : vue en direct. `kill PID` : arrêter un processus.
+- `ip a` : interfaces et adresses IP.
+- `ss -tulpn` : ports en écoute (`-t` TCP, `-u` UDP, `-l` en écoute, `-p` programme, `-n` valeurs numériques).
+- `ping hôte` : tester la connexion. `curl -I https://site` : récupérer les en-têtes HTTP (voir [security-headers-checker](https://github.com/samuelbouzendorffer-icam/security-headers-checker)).
+
+## Journaux
+
+- `/var/log/auth.log` : authentifications (Debian/Ubuntu).
+- `journalctl -u ssh --since "1 hour ago"` : journal du service SSH sur la dernière heure (le service s'appelle `sshd` sur d'autres distributions).
+
+## SSH
+
+```bash
+ssh-keygen -t ed25519          # générer une paire de clés
+ssh utilisateur@hote           # se connecter
+scp fichier utilisateur@hote:/dossier/   # copier un fichier
+```
+
+Une connexion par clé est plus sûre qu'un mot de passe, car elle ne peut pas être devinée par force brute.
+
+## Intégrité
+
+```bash
+sha256sum fichier > fichier.sha256   # enregistrer l'empreinte
+sha256sum -c fichier.sha256          # vérifier plus tard
+```
+
+C'est le principe de mon projet [file-integrity-checker](https://github.com/samuelbouzendorffer-icam/file-integrity-checker).

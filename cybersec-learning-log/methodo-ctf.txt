@@ -1,0 +1,39 @@
+# Méthode pour un CTF
+
+Un CTF (*Capture The Flag*) est une compétition où l'on résout des épreuves de sécurité pour récupérer des drapeaux (*flags*), souvent de la forme `flag{...}`. Voici la méthode que je m'applique.
+
+## Démarche
+
+1. **Lire l'énoncé en entier** : catégorie, points, fichiers fournis, indices, format du drapeau.
+2. **Regarder avant d'agir** : identifier le type d'un fichier (`file`), en lire les chaînes de caractères (`strings`), ses métadonnées (`exiftool`).
+3. **Essayer les pistes simples d'abord** : encodages classiques (Base64, hexadécimal, ROT13), voir [ctf-encoding-toolkit](https://github.com/samuelbouzendorffer-icam/ctf-encoding-toolkit).
+4. **Noter chaque essai** : ce qui a été tenté, ce qui a marché, ce qui a échoué. Cela évite de tourner en rond.
+5. **Limiter le temps par épreuve** : au bout d'un moment sans avancée (par exemple 30 minutes), passer à une autre et y revenir ensuite.
+6. **Respecter exactement le format du drapeau** avant de le soumettre.
+7. **Après le CTF** : relire les solutions publiées pour comprendre ce qui m'a échappé.
+
+## Catégories fréquentes
+
+| Catégorie | De quoi s'agit-il ? | Outils de départ |
+|---|---|---|
+| Web | trouver une faille dans un site | outils de développement du navigateur, onglet réseau, cookies |
+| Cryptographie | casser un chiffrement faible | chiffres classiques, XOR, analyse de fréquences ([classic-ciphers](https://github.com/samuelbouzendorffer-icam/classic-ciphers)) |
+| Forensique | analyser des fichiers, des journaux, des captures | `file`, `strings`, Wireshark |
+| Rétro-ingénierie | comprendre le fonctionnement d'un programme | lecture de code, débogueur |
+| OSINT | retrouver des informations à partir de sources publiques | moteurs de recherche, métadonnées |
+| Stéganographie | message caché dans une image ou un son | `exiftool`, `binwalk`, `xxd` |
+| Programmation | écrire un petit script pour résoudre un problème | Python, C++ |
+
+CyberChef (outil web open source) est très pratique pour enchaîner des décodages.
+
+## Règles que je respecte
+
+- Je reste dans le périmètre fixé par les organisateurs : jamais d'attaque contre l'infrastructure de la plateforme.
+- Je ne partage pas les drapeaux ni les solutions pendant l'épreuve.
+- Je ne publie pas les solutions d'épreuves encore actives.
+- Je ne teste ces techniques que sur des systèmes qui m'appartiennent ou des plateformes prévues pour s'entraîner.
+
+## Mon expérience
+
+- Cyber Ninja CTF (31/01/2025) : participation en solo, plusieurs épreuves de programmation résolues.
+- Hack The Box : tutoriel d'initiation complété et modules de base de la plateforme.

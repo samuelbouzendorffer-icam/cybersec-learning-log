@@ -1,0 +1,40 @@
+# OWASP Top 10 : édition 2025
+
+Résumé en français, avec mes mots, des dix risques les plus critiques pour les applications web selon l'OWASP. Source officielle : <https://top10.owasp.org/2025/> (œuvre sous licence CC BY 3.0).
+
+C'est un document de sensibilisation, pas une liste de contrôle exhaustive. L'OWASP la met à jour tous les quelques années : l'édition précédente date de 2021.
+
+| # | Catégorie | En une phrase |
+|---|---|---|
+| A01 | Contrôle d'accès défaillant | un utilisateur accède à des données ou des actions qui ne lui sont pas destinées |
+| A02 | Mauvaise configuration de sécurité | comptes par défaut, services inutiles, messages d'erreur trop bavards |
+| A03 | Défaillances de la chaîne d'approvisionnement logicielle | une dépendance, un outil de build ou une distribution est compromis |
+| A04 | Défaillances cryptographiques | données sensibles mal protégées, algorithmes faibles |
+| A05 | Injection | des données saisies sont interprétées comme des commandes |
+| A06 | Conception non sécurisée | la faille vient de la conception, pas du code |
+| A07 | Défaillances d'authentification | connexion et sessions mal protégées |
+| A08 | Défaillances d'intégrité des logiciels ou des données | mises à jour et données dont on ne vérifie pas l'intégrité |
+| A09 | Défaillances de journalisation et d'alerte | une attaque passe inaperçue |
+| A10 | Mauvaise gestion des conditions exceptionnelles | erreurs mal gérées, système qui « échoue ouvert » |
+
+## Détail
+
+**A01 Contrôle d'accès défaillant.** Exemple : changer un numéro dans l'URL (`/facture/1042` en `/facture/1043`) et voir la facture de quelqu'un d'autre. Depuis 2025, les attaques où le serveur est amené à faire des requêtes à la place de l'attaquant (SSRF) sont rattachées à cette catégorie. Prévention : refuser par défaut, vérifier les droits côté serveur à chaque requête, appliquer le moindre privilège.
+
+**A02 Mauvaise configuration de sécurité.** Passée de la 5ᵉ à la 2ᵉ place : de plus en plus de comportements dépendent de la configuration. Exemples : mot de passe administrateur par défaut, listage des dossiers activé, détails techniques dans les erreurs. Prévention : durcissement, configuration reproductible et revue régulière. Un outil pour s'y entraîner : [security-headers-checker](https://github.com/samuelbouzendorffer-icam/security-headers-checker).
+
+**A03 Chaîne d'approvisionnement logicielle (nouvelle).** Elle élargit « composants vulnérables et obsolètes » à tout l'écosystème : dépendances, systèmes de build, distribution. Prévention : inventaire des dépendances, mises à jour, vérification des signatures et des empreintes, versions verrouillées.
+
+**A04 Défaillances cryptographiques.** Données sensibles non chiffrées, algorithmes dépassés (MD5, SHA-1), mots de passe mal protégés. Prévention : TLS partout, algorithmes modernes, hash lent et salé pour les mots de passe (voir [password-hashing-demo](https://github.com/samuelbouzendorffer-icam/password-hashing-demo)).
+
+**A05 Injection.** Injection SQL, commandes système, XSS. Le point commun : une donnée est traitée comme du code. Prévention : requêtes paramétrées, validation des entrées, échappement à l'affichage (voir l'usage de `textContent` dans [cyber-toolbox-web](https://github.com/samuelbouzendorffer-icam/cyber-toolbox-web)).
+
+**A06 Conception non sécurisée.** Exemple : une récupération de compte fondée sur des questions dont la réponse est facile à trouver. Un code parfait ne corrige pas une mauvaise conception. Prévention : modélisation des menaces et sécurité pensée dès la conception.
+
+**A07 Défaillances d'authentification.** Mots de passe faibles acceptés, tentatives illimitées, sessions mal gérées. Prévention : authentification multifacteur, limitation des tentatives, contrôle de la robustesse (voir [password-toolkit](https://github.com/samuelbouzendorffer-icam/password-toolkit)).
+
+**A08 Défaillances d'intégrité des logiciels ou des données.** Mises à jour ou fichiers acceptés sans vérifier qu'ils n'ont pas été modifiés. Prévention : signatures, vérification d'empreintes (voir [file-integrity-checker](https://github.com/samuelbouzendorffer-icam/file-integrity-checker)).
+
+**A09 Défaillances de journalisation et d'alerte.** Sans journaux, on ne sait pas ce qui s'est passé. Et des journaux sans alerte sont de peu d'utilité : d'où l'ajout du mot « alerte » en 2025. Prévention : journaliser les événements de sécurité, déclencher des alertes, s'entraîner à réagir (voir [ssh-log-analyzer](https://github.com/samuelbouzendorffer-icam/ssh-log-analyzer)).
+
+**A10 Mauvaise gestion des conditions exceptionnelles (nouvelle).** Erreurs mal gérées, erreurs logiques, système qui reste ouvert quand quelque chose échoue (*fail open*), messages d'erreur qui révèlent des détails internes. Prévention : traiter tous les cas d'erreur, échouer de façon sûre (accès refusé plutôt qu'autorisé), messages génériques pour l'utilisateur et détails dans les journaux.
